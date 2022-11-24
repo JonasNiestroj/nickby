@@ -1,0 +1,15 @@
+{
+  "name": "test",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "develop": "nickby develop",
+    "generate": "nickby generate"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "nickby": "^0.0.1"
+  }
+}

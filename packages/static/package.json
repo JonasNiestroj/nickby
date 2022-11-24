@@ -1,0 +1,24 @@
+{
+  "name": "nickby",
+  "version": "0.0.1",
+  "main": "index.js",
+  "type": "module",
+  "bin": {
+    "nickby": "bin/nickby.js"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@vitejs/plugin-vue": "^3.2.0",
+    "fs-extra": "^10.1.0",
+    "globby": "^8.0.1",
+    "node-fetch": "^3.3.0",
+    "vite": "^3.2.4",
+    "vue": "^3.2.45",
+    "vue-router": "^4.1.6"
+  },
+  "description": ""
+}
