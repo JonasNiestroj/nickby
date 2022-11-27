@@ -5,6 +5,7 @@ import plugin from '../plugin.js';
 import vue from '@vitejs/plugin-vue';
 import fs from 'fs';
 import { __dirname } from '../utils/file.js';
+import { render } from '../render/render.js';
 
 export default async function (api) {
   const rootPath = path.join(__dirname, '../app');
@@ -67,11 +68,6 @@ export default async function (api) {
   const manifest = JSON.parse(
     fs.readFileSync(toAbsolute('../app/dist/static/ssr-manifest.json'), 'utf-8')
   );
-  const template = fs.readFileSync(
-    toAbsolute('../app/dist/static/index.html'),
-    'utf-8'
-  );
-  const { render } = await import('../app/dist/server/entry-server.js');
 
   // determine routes to pre-render from src/pages
   const routesToPrerender = fs
@@ -84,27 +80,7 @@ export default async function (api) {
 
   // pre-render each route...
   for (const route of routesToPrerender) {
-    const serverCode = route.file.replace('.vue', '.server.js');
-    const pages = service.resolve('src/pages');
-
-    let data = {};
-    if (fs.existsSync(path.join(pages, serverCode))) {
-      data = await (
-        await server.ssrLoadModule(path.join(pages, serverCode))
-      ).default();
-    }
-
-    const [appHtml, preloadLinks] = await render(route.url, manifest, data);
-
-    const html = template
-      .replace(`<!--preload-links-->`, preloadLinks)
-      .replace(`<!--app-html-->`, appHtml)
-      .replace(
-        '<!--hydration-->',
-        `<script type="text/javascript">window.__NICKBY_DATA__=${JSON.stringify(
-          data
-        )}</script>`
-      );
+    const html = await render(server, route.url, service, manifest);
 
     const filePath = `dist/static${
       route.url === '/' ? '/index' : route.url

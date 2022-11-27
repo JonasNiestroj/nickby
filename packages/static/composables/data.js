@@ -6,7 +6,7 @@ const useData = () => {
   }
   if (window.__NICKBY_DATA__) {
     const dataRef = ref(window.__NICKBY_DATA__);
-    console.log(dataRef);
+
     delete window.__NICKBY_DATA__;
     return dataRef;
   }
