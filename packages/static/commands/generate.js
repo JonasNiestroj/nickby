@@ -30,7 +30,7 @@ export default async function (api) {
         '@nickby/init': service.resolve('init.js'),
       },
     },
-    plugins: [plugin(service), vue()],
+    plugins: service.vitePlugins(),
     appType: 'custom',
   });
 
@@ -54,7 +54,7 @@ export default async function (api) {
         '@nickby/init': service.resolve('init.js'),
       },
     },
-    plugins: [plugin(service), vue()],
+    plugins: service.vitePlugins(),
     appType: 'custom',
   });
 
@@ -87,7 +87,7 @@ export default async function (api) {
         '@nickby/init': service.resolve('init.js'),
       },
     },
-    plugins: [plugin(service), vue()],
+    plugins: service.vitePlugins(),
     appType: 'custom',
   });
 

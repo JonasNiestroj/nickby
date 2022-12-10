@@ -4,6 +4,8 @@ import generateRoutes from './routes/index.js';
 import fs from 'fs';
 import { loadConfig } from 'c12';
 import consola from 'consola';
+import plugin from './plugin.js';
+import vue from '@vitejs/plugin-vue';
 
 function pathToRoute(file) {
   const route = file
@@ -90,5 +92,13 @@ export default class Service {
 
   debug(text) {
     consola.debug(text);
+  }
+
+  vitePlugins() {
+    let plugins = [plugin(this), vue()];
+    if (this.config.vitePlugins) {
+      plugins = [...plugins, ...this.config.vitePlugins];
+    }
+    return plugins;
   }
 }
