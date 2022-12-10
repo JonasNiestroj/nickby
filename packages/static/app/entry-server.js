@@ -1,9 +1,10 @@
 import { basename } from 'node:path';
 import { renderToString } from 'vue/server-renderer';
 import { createApp } from './main.js';
+import init from '@nickby/init';
 
 export async function render(url, manifest, data) {
-  const { app, router } = createApp();
+  const { app, router } = createApp(init);
 
   // set the router to the desired URL before rendering
   await router.push(url);

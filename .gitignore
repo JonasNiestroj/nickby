@@ -1,6 +1,4 @@
 .DS_Store
 node_modules
 
-packages/static/app/dist
-packages/test/dist
-packages/test/src/.temp
+packages/test

@@ -1,4 +1,5 @@
 import { readFileSync } from 'fs';
+import path from 'path';
 
 const plugin = () => {
   return {

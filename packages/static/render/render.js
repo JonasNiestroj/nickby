@@ -1,6 +1,5 @@
 import fs from 'fs';
 import path from 'path';
-import { __dirname } from '../utils/file.js';
 
 const resolveComponentFromUrl = (url) => {
   let componentUrl = url;
@@ -13,13 +12,13 @@ const resolveComponentFromUrl = (url) => {
   return lastPart[0].toUpperCase() + lastPart.slice(1);
 };
 
-export const render = async (server, url, service, manifest) => {
-  const appPath = path.join(__dirname, '../app');
-
-  let template = fs.readFileSync(path.join(appPath, 'index.html'), 'utf-8');
+export const render = async (server, url, service, manifest, htmlTemplate) => {
+  let template = htmlTemplate;
   template = await server.transformIndexHtml(url, template);
   let render = (
-    await server.ssrLoadModule(path.join(appPath, 'entry-server.js'))
+    await server.ssrLoadModule(
+      path.join(service.resolve('node_modules/.nickby'), 'entry-server.js')
+    )
   ).render;
 
   const component = resolveComponentFromUrl(url);
@@ -32,11 +31,28 @@ export const render = async (server, url, service, manifest) => {
     data = await (
       await server.ssrLoadModule(path.join(pages, `${component}.server.js`))
     ).default();
+  } else {
+    const routes = service.pages;
+    const matchingRoute = routes.find((route) => route.path === url);
+
+    if (matchingRoute) {
+      if (
+        fs.existsSync(
+          matchingRoute.component.substring(3).replace('.vue', '.server.js')
+        )
+      ) {
+        data = await (
+          await server.ssrLoadModule(
+            matchingRoute.component.substring(3).replace('.vue', '.server.js')
+          )
+        ).default();
+      }
+    }
   }
 
   const [appHtml, preloadLinks] = await render(url, manifest, data);
 
-  const html = template
+  let html = template
     .replace(`<!--preload-links-->`, preloadLinks)
     .replace(`<!--app-html-->`, appHtml)
     .replace(
