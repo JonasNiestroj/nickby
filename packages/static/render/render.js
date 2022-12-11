@@ -1,5 +1,6 @@
 import fs from 'fs';
 import path from 'path';
+import * as devalue from 'devalue';
 
 const resolveComponentFromUrl = (url) => {
   let componentUrl = url;
@@ -30,7 +31,7 @@ export const render = async (server, url, service, manifest, htmlTemplate) => {
   if (fs.existsSync(path.join(pages, `${component}.server.js`))) {
     data = await (
       await server.ssrLoadModule(path.join(pages, `${component}.server.js`))
-    ).default();
+    ).default({ url: url });
   } else {
     const routes = service.pages;
     const matchingRoute = routes.find((route) => route.path === url);
@@ -45,7 +46,7 @@ export const render = async (server, url, service, manifest, htmlTemplate) => {
           await server.ssrLoadModule(
             matchingRoute.component.substring(3).replace('.vue', '.server.js')
           )
-        ).default();
+        ).default({ url: url });
       }
     }
   }
@@ -57,7 +58,7 @@ export const render = async (server, url, service, manifest, htmlTemplate) => {
     .replace(`<!--app-html-->`, appHtml)
     .replace(
       '<!--hydration-->',
-      `<script type="text/javascript">window.__NICKBY_DATA__=${JSON.stringify(
+      `<script type="text/javascript">window.__NICKBY_DATA__=${devalue.uneval(
         data
       )}</script>`
     );
