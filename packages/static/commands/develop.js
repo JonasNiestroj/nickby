@@ -65,6 +65,9 @@ export default async function (api) {
 
   app.use(server.middlewares);
 
+  app.use(express.json()); // to support JSON-encoded bodies
+  app.use(express.urlencoded());
+
   app.use('*', async (req, res, next) => {
     try {
       const url = req.originalUrl;

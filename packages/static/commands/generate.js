@@ -1,8 +1,6 @@
 import Service from '../service.js';
 import { createServer, build } from 'vite';
-import path from 'path';
-import plugin from '../plugin.js';
-import vue from '@vitejs/plugin-vue';
+import async from 'async';
 import fs from 'fs-extra';
 import { render } from '../render/render.js';
 
@@ -68,11 +66,11 @@ export default async function (api) {
     entry: 'node_modules/.nickby/dist/static/index.html',
     root: service.resolve(''),
     debug: true,
-    preview: {
-      port: 1337,
-    },
     server: {
       middlewareMode: true,
+      watch: {
+        ignored: ['dist/**'],
+      },
     },
     build: {
       rollupOptions: {
@@ -85,13 +83,17 @@ export default async function (api) {
     resolve: {
       alias: {
         '@nickby/init': service.resolve('init.js'),
+        promisify: 'promisify',
       },
     },
     plugins: service.vitePlugins(),
     appType: 'custom',
   });
 
-  fs.rmSync('dist', { recursive: true });
+  if (fs.existsSync('dist')) {
+    fs.rmSync('dist', { recursive: true });
+  }
+
   fs.mkdirSync('dist');
   fs.mkdirSync('dist/static');
 
@@ -109,7 +111,7 @@ export default async function (api) {
   );
 
   // pre-render each route...
-  for (const route of service.pages) {
+  await async.forEachLimit(service.pages, 10, async (route) => {
     const html = await render(
       server,
       route.path,
@@ -127,7 +129,7 @@ export default async function (api) {
     } catch (e) {
       console.log(e);
     }
-  }
+  });
 
   fs.renameSync(
     service.resolve('node_modules/.nickby/dist/static/assets'),

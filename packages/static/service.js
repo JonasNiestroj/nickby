@@ -77,7 +77,11 @@ export default class Service {
     this.pages.push(
       ...routes.map((route) => {
         console.debug(`Loaded route ${route.path}`);
-        return { path: route.path, component: `../${route.component}` };
+        return {
+          path: route.path,
+          component: `../${route.component}`,
+          payload: route.payload,
+        };
       })
     );
   }
@@ -95,7 +99,7 @@ export default class Service {
   }
 
   vitePlugins() {
-    let plugins = [plugin(this), vue()];
+    let plugins = [vue(), plugin(this)];
     if (this.config.vitePlugins) {
       plugins = [...plugins, ...this.config.vitePlugins];
     }

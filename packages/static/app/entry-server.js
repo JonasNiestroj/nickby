@@ -22,7 +22,7 @@ export async function render(url, manifest, data) {
   // which we can then use to determine what files need to be preloaded for this
   // request.
   const preloadLinks = renderPreloadLinks(ctx.modules, manifest);
-  return [html, preloadLinks];
+  return [html, preloadLinks, ctx];
 }
 
 function renderPreloadLinks(modules, manifest) {
