@@ -42,13 +42,55 @@ export const render = async (server, url, service, manifest, htmlTemplate) => {
     }
   });
 
+  if (ctx.head) {
+    if (ctx.head.title) {
+      template = template.replace('<!--app-title-->', ctx.head.title);
+    }
+    if (ctx.head.html) {
+      let tags = [];
+      Object.keys(ctx.head.html).forEach((attr) => {
+        tags.push(`${attr}="${ctx.head.html[attr]}"`);
+      });
+      if (!tags) {
+        tags.push('lang="en"');
+      }
+      template = template.replace('<html>', `<html ${tags.join(' ')}>`);
+    }
+    if (ctx.head.meta) {
+      const metaTags = [];
+      ctx.head.meta.forEach((metaTag) => {
+        const metaAttributes = [];
+        Object.keys(metaTag).forEach((metaAttribute) => {
+          metaAttributes.push(`${metaAttribute}="${metaTag[metaAttribute]}"`);
+        });
+        metaTags.push(`<meta ${metaAttributes.join(' ')}>`);
+      });
+      template = template.replace('<!--app-meta-->', metaTags.join('\n'));
+    }
+    if (ctx.head.link) {
+      const links = [];
+      ctx.head.link.forEach((link) => {
+        const linkAttributes = [];
+        Object.keys(link).forEach((linkAttribute) => {
+          linkAttributes.push(`${linkAttribute}="${link[linkAttribute]}"`);
+        });
+        links.push(`<link ${linkAttributes.join(' ')}>`);
+      });
+      template = template.replace('<!--app-links-->', links.join('\n'));
+    }
+  }
+
   let html = template
+    .replace('<html>', '<html lang="en">')
+    .replace('<!--app-links-->', '')
     .replace(`<!--preload-links-->`, preloadLinks)
     .replace(`<!--app-html-->`, appHtml)
     .replace(
       '<!--hydration-->',
       `<script type="text/javascript">${hydration.join('')}</script>`
-    );
+    )
+    .replace('<!--app-title-->', 'Nickby app')
+    .replace('<!--app-meta-->', '');
 
   return html;
 };

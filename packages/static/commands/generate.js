@@ -17,27 +17,6 @@ export default async function (api) {
     ssr: true,
     root: service.resolve(''),
     build: {
-      ssr: true,
-      outDir: 'node_modules/.nickby/dist/server',
-      rollupOptions: {
-        input: 'node_modules/.nickby/entry-server.js',
-      },
-    },
-    resolve: {
-      alias: {
-        '@nickby/init': service.resolve('init.js'),
-      },
-    },
-    plugins: service.vitePlugins(),
-    appType: 'custom',
-  });
-
-  await build({
-    base: '/',
-    configFile: false,
-    ssr: true,
-    root: service.resolve(''),
-    build: {
       rollupOptions: {
         input: 'node_modules/.nickby/index.html',
         output: {
