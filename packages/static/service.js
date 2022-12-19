@@ -7,6 +7,8 @@ import consola from 'consola';
 import plugin from './plugin.js';
 import vue from '@vitejs/plugin-vue';
 
+const logger = consola.create();
+
 function pathToRoute(file) {
   const route = file
     .toLowerCase()
@@ -25,10 +27,16 @@ export default class Service {
   }
 
   async init() {
-    consola.info('Initializing nickby...');
+    logger.info('Initializing nickby...');
     await this.loadConfig();
 
-    consola.info('Loading routes...');
+    if (!this.config.debug) {
+      logger.level = 3;
+    } else {
+      logger.level = 4;
+    }
+
+    logger.info('Loading routes...');
     const paths = ['pages/**/*.vue'];
 
     const pages = await globby(paths, { cwd: 'src' });
@@ -42,7 +50,8 @@ export default class Service {
           component: `../${componentPath}`,
         };
         this.pages.push(page);
-        consola.debug(`Loaded route ${pathToRoute(file)}`);
+
+        logger.debug(`Loaded route ${pathToRoute(file)}`);
       })
     );
 
@@ -57,7 +66,7 @@ export default class Service {
       return;
     }
 
-    consola.info('Loading nickby.config.js...');
+    logger.info('Loading nickby.config.js...');
 
     const config = await loadConfig({
       configFile: 'nickby.config',
@@ -76,7 +85,7 @@ export default class Service {
 
     this.pages.push(
       ...routes.map((route) => {
-        console.debug(`Loaded route ${route.path}`);
+        logger.debug(`Loaded route ${route.path}`);
         return {
           path: route.path,
           component: `../${route.component}`,
@@ -91,11 +100,11 @@ export default class Service {
   }
 
   info(text) {
-    consola.info(text);
+    logger.info(text);
   }
 
   debug(text) {
-    consola.debug(text);
+    logger.debug(text);
   }
 
   vitePlugins() {
